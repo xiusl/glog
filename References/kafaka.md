@@ -31,3 +31,36 @@
 4. follower 从 leader 拉取消息数据
 5. follower 将消息写入本地磁盘后向 leader 发送 ACK
 6. leader 收到所有的 follower 的 ACK 之后向生产者发送 ACK
+
+
+
+## 选择 partition 的原则
+
+在 kafaka 中，如果某个 topic 有多个 partition，该如何选择发送到哪个 partition。
+
+几个原则：
+
+1. 在写入的时候可指定需要写入的 partition，如果有指定，那么写入指定的 partition。
+2. 没有指定，但设置了数据的 key，则会根据 key 的值 hash 出一个 partition。
+3. 没有指定，也没有设置 key，则会采用 **轮询** 的方式，即每次取一小段时间的数据写入某个 partition，下一小段写入下一个 partition。
+
+
+
+## ACK 应答机制
+
+producer 在向 kafaka 写入消息时。可以设置参数来确定 kafaka 是否收到数据，参数的值可以设置为 0，1，all。
+
+- **0:**  代表 producer 往 kafaka 发送的数据不需要等待返回，不确保消息发送成功，安全性最低，但效率高。
+- **1:** 代表发送消息后，只要 leader 应答就可以发送下一条消息，只确保了 leader 发送成功。
+- **all:** 代表向集群发送的数据需要所有 follower 都完成从 leader 的同步才会发送下一条，确保 leader 发送成功，且所有副本完成备份。安全性最好，但效率最低。
+
+**需要注意**：如果向不存在的 Topic 发送数据，kafaka 会自动创建 Topic，partition和replication，数量都是 1。
+
+
+
+
+
+
+
+
+
