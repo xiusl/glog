@@ -1,4 +1,4 @@
-# Kafaka
+# Kafka
 
 ## 简介
 
@@ -11,10 +11,10 @@
 
 - **Producer:** 生产者，消息的生产者，消息的入口。
 
-- **Kafaka cluster:** Kafaka 集群，一台或多台服务器组成。
-  - **Broker:** 部署了 Kafaka 实例的服务器节点。每台服务器上有一个或多个 Kafaka 实例。每个 kafaka 集群内的 broker 都有一个不重复的编号。
+- **Kafka cluster:** Kafka 集群，一台或多台服务器组成。
+  - **Broker:** 部署了 Kafka 实例的服务器节点。每台服务器上有一个或多个 Kafka 实例。每个 kafka 集群内的 broker 都有一个不重复的编号。
   - **Topic:** 消息的主题，可以理解为消息的分类。数据保存在 Topic 上。每个 Broker 上可以创建多个 Topic。实际应用中通常一个业务线一个 Topic。
-  - **Partition:**  Topic 的分区，每个 Topic 可以有多个分区，分区的作用是做负载，提高 kafaka 的吞吐量。同一个 topic 在不同分区的数据是不重复的，partition 的表现形式就是一个一个的文件夹。
+  - **Partition:**  Topic 的分区，每个 Topic 可以有多个分区，分区的作用是做负载，提高 kafka 的吞吐量。同一个 topic 在不同分区的数据是不重复的，partition 的表现形式就是一个一个的文件夹。
   - **Replication:** 每个分区都有好多副本，副本的作用是做备胎。当主分区 （Leader）故障时，会选择一个备胎（Follow）上位，成为 Leader。默认副本最大数量是 10 个，且副本数量不能大于 broker 的数量，follow 和 leader 绝对在不同的机器，同一机器对同一分区也只能存放一个副本（包括自己）。
   
 - **Consumer:** 消费者，消息的消费方，消息的出口。
@@ -25,7 +25,7 @@
 
 ![UML 图](http://pp.video.sleen.top/uPic/blog/UML%20%E5%9B%BE-Bmefxz.jpg)
 
-1. 生产者从 kafaka 集群获取分区 leader 信息
+1. 生产者从 kafka 集群获取分区 leader 信息
 2. 生产者将消息发送给 leader
 3. leader 将消息写入本地磁盘
 4. follower 从 leader 拉取消息数据
@@ -36,7 +36,7 @@
 
 ## 选择 partition 的原则
 
-在 kafaka 中，如果某个 topic 有多个 partition，该如何选择发送到哪个 partition。
+在 kafka 中，如果某个 topic 有多个 partition，该如何选择发送到哪个 partition。
 
 几个原则：
 
@@ -48,13 +48,13 @@
 
 ## ACK 应答机制
 
-producer 在向 kafaka 写入消息时。可以设置参数来确定 kafaka 是否收到数据，参数的值可以设置为 0，1，all。
+producer 在向 kafka 写入消息时。可以设置参数来确定 kafka 是否收到数据，参数的值可以设置为 0，1，all。
 
-- **0:**  代表 producer 往 kafaka 发送的数据不需要等待返回，不确保消息发送成功，安全性最低，但效率高。
+- **0:**  代表 producer 往 kafka 发送的数据不需要等待返回，不确保消息发送成功，安全性最低，但效率高。
 - **1:** 代表发送消息后，只要 leader 应答就可以发送下一条消息，只确保了 leader 发送成功。
 - **all:** 代表向集群发送的数据需要所有 follower 都完成从 leader 的同步才会发送下一条，确保 leader 发送成功，且所有副本完成备份。安全性最好，但效率最低。
 
-**需要注意**：如果向不存在的 Topic 发送数据，kafaka 会自动创建 Topic，partition和replication，数量都是 1。
+**需要注意**：如果向不存在的 Topic 发送数据，kafka 会自动创建 Topic，partition和replication，数量都是 1。
 
 
 
