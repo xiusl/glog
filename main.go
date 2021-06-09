@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/xiusl/glog/glog"
 )
 
 func main() {
 	fmt.Println("This is my Logger")
-	logger := glog.NewLogger("debug")
-	// logger := glog.NewFileLogger("debug", "./", "web.log")
+	// logger := glog.NewLogger("debug")
+	logger := glog.NewFileLogger("debug", "./", "web.log")
 
 	for {
 		logger.Debug("log debug")
@@ -23,7 +22,15 @@ func main() {
 		logger.Warning("log warning")
 		logger.Error("this is error")
 		logger.Fatal("this is Fatal")
+		logger.Error("this is error")
+		logger.Fatal("this is Fatal")
+		logger.Error("this is error")
+		logger.Fatal("this is Fatal")
+		logger.Error("this is error")
+		logger.Fatal("this is Fatal")
+		logger.Error("this is error")
+		logger.Fatal("this is Fatal")
 
-		time.Sleep(1 * time.Second)
+		// time.Sleep(1 * time.Second)
 	}
 }
