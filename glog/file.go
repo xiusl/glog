@@ -70,28 +70,29 @@ func (f *FileLogger) Log(level Level, format string, arg ...interface{}) {
 	timeStr := time.Now().Format(timeFromatStr)
 	filePath, fileName, lineNo := getInfo(3)
 
+	logStr := fmt.Sprintf("[%s] [%s] [%s:%s:%d] %s\n", timeStr, level.ToString(), fileName, filePath, lineNo, msg)
+
 	if f.checkFileSize(f.file) {
-		if file, ok := f.splitFile(f.file); ok {
-			f.file = file
+		if newFile, ok := f.splitFile(f.file); ok {
+			f.file = newFile
 		}
 	}
+	f.WriteLog(f.file, logStr)
 
-	logStr := fmt.Sprintf("[%s] [%s] [%s:%s:%d] %s\n", timeStr, level.ToString(), fileName, filePath, lineNo, msg)
-	_, err := f.file.Write([]byte(logStr))
-	if err != nil {
-		fmt.Printf("FileLog: Failed to Wirte log, err: %v.\n", err)
-	}
 	if level >= ERROR {
 		if f.checkFileSize(f.errFile) {
-			if file, ok := f.splitFile(f.errFile); ok {
-				f.errFile = file
+			if newFile, ok := f.splitFile(f.errFile); ok {
+				f.errFile = newFile
 			}
 		}
+		f.WriteLog(f.errFile, logStr)
+	}
+}
 
-		_, err := f.errFile.Write([]byte(logStr))
-		if err != nil {
-			fmt.Printf("FileLog: Failed to Wirte log, err: %v.\n", err)
-		}
+func (f *FileLogger) WriteLog(file *os.File, line string) {
+	_, err := file.Write([]byte(line))
+	if err != nil {
+		fmt.Printf("FileLog: Failed to Wirte log, err: %v.\n", err)
 	}
 }
 
