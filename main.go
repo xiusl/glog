@@ -9,8 +9,8 @@ import (
 
 func main() {
 	fmt.Println("This is my Logger")
-	// logger := glog.NewLogger("debug")
-	logger := glog.NewFileLogger("debug", "./", "web.log")
+	logger := glog.NewLogger("debug")
+	// logger := glog.NewFileLogger("debug", "./", "web.log")
 
 	for {
 		logger.Debug("log debug")

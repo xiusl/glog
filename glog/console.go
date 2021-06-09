@@ -31,7 +31,7 @@ func (l *ConsoleLogger) Log(level Level, format string, arg ...interface{}) {
 	msg := fmt.Sprintf(format, arg...)
 	timeStr := time.Now().Format(timeFromatStr)
 	filePath, fileName, lineNo := getInfo(3)
-	fmt.Printf("[%s] [INFO] [%s:%s:%d] %s\n", timeStr, fileName, filePath, lineNo, msg)
+	fmt.Printf("[%s] [%s] [%s:%s:%d] %s\n", timeStr, level.ToString(), fileName, filePath, lineNo, msg)
 }
 
 func (l *ConsoleLogger) Debug(format string, arg ...interface{}) {
@@ -44,4 +44,12 @@ func (l *ConsoleLogger) Info(format string, arg ...interface{}) {
 
 func (l *ConsoleLogger) Warning(format string, arg ...interface{}) {
 	l.Log(WARNING, format, arg...)
+}
+
+func (l *ConsoleLogger) Error(format string, arg ...interface{}) {
+	l.Log(ERROR, format, arg...)
+}
+
+func (l *ConsoleLogger) Fatal(format string, arg ...interface{}) {
+	l.Log(FATAL, format, arg...)
 }
