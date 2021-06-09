@@ -56,7 +56,36 @@ producer 在向 kafka 写入消息时。可以设置参数来确定 kafka 是否
 
 **需要注意**：如果向不存在的 Topic 发送数据，kafka 会自动创建 Topic，partition和replication，数量都是 1。
 
+## Mac 安装
 
+```shell
+brew install kafka
+
+# 后台启动
+zookeeper-server-start -daemon /usr/local/etc/kafka/zookeeper.properties
+kafka-server-start -daemon /usr/local/etc/kafka/server.properties
+
+# brew 启动
+brew services start kafka
+
+# 启动
+zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties
+kafka-server-start /usr/local/etc/kafka/server.properties
+```
+
+## 测试
+
+```
+$ kafka-console-producer --bootstrap-server 127.0.0.1:9092 --topic "web"
+> 123
+> 456
+```
+
+```
+$ kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic "web"
+> 123
+> 456
+```
 
 
 
