@@ -15,6 +15,16 @@ type FileLogger struct {
 	MaxSize  int64
 	file     *os.File
 	errFile  *os.File
+	logChan  chan *logMsg
+}
+
+type logMsg struct {
+	level     Level
+	msg       string
+	fileName  string
+	funcName  string
+	timestamp string
+	line      int
 }
 
 func NewFileLogger(levelStr string, filePath, fileName string) *FileLogger {
@@ -28,12 +38,15 @@ func NewFileLogger(levelStr string, filePath, fileName string) *FileLogger {
 		FilePath: filePath,
 		FileName: fileName,
 		MaxSize:  10 * 1024 * 1024,
+		logChan:  make(chan *logMsg, 1000),
 	}
 
 	err = f.initFile()
 	if err != nil {
 		panic(err)
 	}
+
+	go f.WriteLogWorker()
 
 	return f
 }
@@ -68,28 +81,52 @@ func (f *FileLogger) Log(level Level, format string, arg ...interface{}) {
 	}
 	msg := fmt.Sprintf(format, arg...)
 	timeStr := time.Now().Format(timeFromatStr)
-	filePath, fileName, lineNo := getInfo(3)
+	funcName, fileName, lineNo := getInfo(3)
 
-	logStr := fmt.Sprintf("[%s] [%s] [%s:%s:%d] %s\n", timeStr, level.ToString(), fileName, filePath, lineNo, msg)
-
-	if f.checkFileSize(f.file) {
-		if newFile, ok := f.splitFile(f.file); ok {
-			f.file = newFile
-		}
+	log := &logMsg{
+		level:     level,
+		msg:       msg,
+		fileName:  fileName,
+		funcName:  funcName,
+		timestamp: timeStr,
+		line:      lineNo,
 	}
-	f.WriteLog(f.file, logStr)
 
-	if level >= ERROR {
-		if f.checkFileSize(f.errFile) {
-			if newFile, ok := f.splitFile(f.errFile); ok {
-				f.errFile = newFile
-			}
-		}
-		f.WriteLog(f.errFile, logStr)
+	select {
+	case f.logChan <- log:
+	default:
 	}
 }
 
-func (f *FileLogger) WriteLog(file *os.File, line string) {
+func (f *FileLogger) WriteLogWorker() {
+	for {
+		select {
+		case log := <-f.logChan:
+			if f.checkFileSize(f.file) {
+				if newFile, ok := f.splitFile(f.file); ok {
+					f.file = newFile
+				}
+			}
+			f.WriteLog(f.file, log)
+
+			if log.level >= ERROR {
+				if f.checkFileSize(f.errFile) {
+					if newFile, ok := f.splitFile(f.errFile); ok {
+						f.errFile = newFile
+					}
+				}
+				f.WriteLog(f.errFile, log)
+			}
+		default:
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+}
+
+func (f *FileLogger) WriteLog(file *os.File, log *logMsg) {
+	line := fmt.Sprintf("[%s] [%s] [%s:%s:%d] %s\n", log.timestamp, log.level.ToString(),
+		log.fileName, log.funcName, log.line, log.msg)
+
 	_, err := file.Write([]byte(line))
 	if err != nil {
 		fmt.Printf("FileLog: Failed to Wirte log, err: %v.\n", err)
