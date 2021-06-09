@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,9 @@ type FileLogger struct {
 	file     *os.File
 	errFile  *os.File
 	logChan  chan *logMsg
+
+	m  sync.Mutex
+	em sync.Mutex
 }
 
 type logMsg struct {
@@ -39,6 +43,8 @@ func NewFileLogger(levelStr string, filePath, fileName string) *FileLogger {
 		FileName: fileName,
 		MaxSize:  10 * 1024 * 1024,
 		logChan:  make(chan *logMsg, 1000),
+		m:        sync.Mutex{},
+		em:       sync.Mutex{},
 	}
 
 	err = f.initFile()
@@ -46,7 +52,9 @@ func NewFileLogger(levelStr string, filePath, fileName string) *FileLogger {
 		panic(err)
 	}
 
-	go f.WriteLogWorker()
+	for i := 0; i < 5; i++ {
+		go f.WriteLogWorker()
+	}
 
 	return f
 }
@@ -102,20 +110,24 @@ func (f *FileLogger) WriteLogWorker() {
 	for {
 		select {
 		case log := <-f.logChan:
+			f.m.Lock()
 			if f.checkFileSize(f.file) {
 				if newFile, ok := f.splitFile(f.file); ok {
 					f.file = newFile
 				}
 			}
 			f.WriteLog(f.file, log)
+			f.m.Unlock()
 
 			if log.level >= ERROR {
+				f.em.Lock()
 				if f.checkFileSize(f.errFile) {
 					if newFile, ok := f.splitFile(f.errFile); ok {
 						f.errFile = newFile
 					}
 				}
 				f.WriteLog(f.errFile, log)
+				f.em.Unlock()
 			}
 		default:
 			time.Sleep(100 * time.Millisecond)

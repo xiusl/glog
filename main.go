@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/xiusl/glog/glog"
 )
@@ -10,6 +11,8 @@ func main() {
 	fmt.Println("This is my Logger")
 	// logger := glog.NewLogger("debug")
 	logger := glog.NewFileLogger("debug", "./", "web.log")
+
+	n := time.Now()
 
 	for {
 		logger.Debug("log debug")
@@ -32,5 +35,8 @@ func main() {
 		logger.Fatal("this is Fatal")
 
 		// time.Sleep(1 * time.Second)
+		if n.Add(time.Minute * 1).Before(time.Now()) {
+			break
+		}
 	}
 }
