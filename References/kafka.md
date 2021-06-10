@@ -87,6 +87,15 @@ $ kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic "web"
 > 456
 ```
 
+## 使用
+
+```
+# 安装拓展
+$ go get github.com/Shopify/sarama
+```
+
+
+
 
 
 
