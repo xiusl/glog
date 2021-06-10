@@ -9,7 +9,7 @@ type ConsoleLogger struct {
 	Level Level
 }
 
-func NewLogger(levelStr string) *ConsoleLogger {
+func NewConsoleLogger(levelStr string) *ConsoleLogger {
 	level, err := parseLevel(levelStr)
 	if err != nil {
 		panic(err)
@@ -36,6 +36,10 @@ func (l *ConsoleLogger) Log(level Level, format string, arg ...interface{}) {
 
 func (l *ConsoleLogger) Debug(format string, arg ...interface{}) {
 	l.Log(DEBUG, format, arg...)
+}
+
+func (l *ConsoleLogger) Trace(format string, arg ...interface{}) {
+	l.Log(TRACE, format, arg...)
 }
 
 func (l *ConsoleLogger) Info(format string, arg ...interface{}) {

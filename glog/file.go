@@ -1,6 +1,7 @@
 package glog
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -31,6 +32,14 @@ func NewFileLogger(levelStr string, filePath, fileName string) *FileLogger {
 	level, err := parseLevel(levelStr)
 	if err != nil {
 		panic(err)
+	}
+
+	if len(filePath) == 0 {
+		panic(errors.New("FileLogger need a filepath"))
+	}
+
+	if len(fileName) == 0 {
+		panic(errors.New("FileLogger need a filename"))
 	}
 
 	f := &FileLogger{
@@ -177,6 +186,10 @@ func (f *FileLogger) Debug(format string, arg ...interface{}) {
 
 func (f *FileLogger) Info(format string, arg ...interface{}) {
 	f.Log(INFO, format, arg...)
+}
+
+func (f *FileLogger) Trace(format string, arg ...interface{}) {
+	f.Log(TRACE, format, arg...)
 }
 
 func (f *FileLogger) Warning(format string, arg ...interface{}) {
