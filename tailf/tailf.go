@@ -89,10 +89,7 @@ func (m *TailManager) StartTailf(ts *TailServer) {
 }
 
 func (tm *TailManager) ReadMessage() *TextMessage {
-	select {
-	case line := <-tm.msgChan:
-		return line
-	}
+	return <-tm.msgChan
 }
 
 func (tm *TailManager) StopTail(key string) {

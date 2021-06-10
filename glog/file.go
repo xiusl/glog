@@ -46,7 +46,7 @@ func NewFileLogger(levelStr string, filePath, fileName string) *FileLogger {
 		Level:    level,
 		FilePath: filePath,
 		FileName: fileName,
-		MaxSize:  10 * 1024 * 1024,
+		MaxSize:  1024 * 80,
 		logChan:  make(chan *logMsg, 1000),
 	}
 

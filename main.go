@@ -52,7 +52,6 @@ func main() {
 
 	//
 	go func(etcdSv *etcd.EtcdServer, tailMgr *tailf.TailManager) {
-		// for {
 		select {
 		case wch := <-etcdSv.WatchChan:
 			if wch.Type == "del" {
@@ -60,9 +59,7 @@ func main() {
 			} else if wch.Type == "put" {
 				tailMgr.UpdateConfig(wch.Key, wch.Confs)
 			}
-		default:
 		}
-		// }
 	}(etcdServer, tm)
 
 	// 监听消息转发到 kafka

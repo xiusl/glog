@@ -17,7 +17,7 @@ const (
 
 func SetupConfigToEtcd() {
 
-	key := "/bd/logagent/config/0.0.0.2"
+	key := "/bd/logagent/config/0.0.0.1"
 
 	cli, err := clientv3.New(
 		clientv3.Config{
@@ -35,7 +35,12 @@ func SetupConfigToEtcd() {
 	var arr []logagent.LogConfig
 	arr = append(arr, logagent.LogConfig{
 		Key:   key,
-		Path:  "./logs/c.log",
+		Path:  "./logs/a.log",
+		Topic: "a_log",
+	})
+	arr = append(arr, logagent.LogConfig{
+		Key:   key,
+		Path:  "./logs/b.log",
 		Topic: "a_log",
 	})
 
