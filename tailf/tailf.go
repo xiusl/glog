@@ -83,11 +83,7 @@ func (m *TailManager) StartTailf(ts *TailServer) {
 				Message: line.Text,
 				Topic:   ts.topic,
 			}
-			select {
-			case m.msgChan <- msg:
-			default:
-			}
-		default:
+			m.msgChan <- msg
 		}
 	}
 }
@@ -96,8 +92,6 @@ func (tm *TailManager) ReadMessage() *TextMessage {
 	select {
 	case line := <-tm.msgChan:
 		return line
-	default:
-		return nil
 	}
 }
 

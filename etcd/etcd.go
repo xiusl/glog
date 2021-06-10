@@ -91,7 +91,6 @@ func (s *EtcdServer) watchKey(key string) {
 				log.Printf("EtcdServer watchKey %v delete", key)
 				select {
 				case s.WatchChan <- wt:
-				default:
 				}
 
 			}
@@ -111,7 +110,6 @@ func (s *EtcdServer) watchKey(key string) {
 				}
 				select {
 				case s.WatchChan <- wt:
-				default:
 				}
 			}
 		}
