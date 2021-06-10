@@ -1,43 +1,30 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"time"
 
-	"github.com/xiusl/glog/glog"
+	"github.com/xiusl/glog/kafka"
+	"github.com/xiusl/glog/tailf"
 )
 
-var logger glog.GLogger
-
 func main() {
-	fmt.Println("This is my Logger")
-	// logger := glog.NewLogger("debug")
-	// logger := glog.NewFileLogger("debug", "./", "web.log")
-	logConfig := &glog.GLoggerConfig{
-		Level: "debug",
-		Type:  "console",
+	err := kafka.Init([]string{"127.0.0.1:9092"})
+	if err != nil {
+		log.Fatalf("kafka init error: %v.\n", err)
 	}
-	logger = glog.NewLogger(logConfig)
+
+	err = tailf.Init("./a.log")
+	if err != nil {
+		log.Fatalf("tailf init error: %v.\n", err)
+	}
 
 	for {
-		logger.Debug("log debug")
-		logger.Info("log info")
-		logger.Warning("log warning")
-
-		logger.Debug("log debug")
-		user := "Tom"
-		logger.Info("log info user: %v", user)
-		logger.Warning("log warning")
-		logger.Error("this is error")
-		logger.Fatal("this is Fatal")
-		logger.Error("this is error")
-		logger.Fatal("this is Fatal")
-		logger.Error("this is error")
-		logger.Fatal("this is Fatal")
-		logger.Error("this is error")
-		logger.Fatal("this is Fatal")
-		logger.Error("this is error")
-		logger.Fatal("this is Fatal")
-
-		// time.Sleep(1 * time.Second)
+		select {
+		case line := <-tailf.ReadLine():
+			kafka.SendMessageToKafka("web", line.Text)
+		default:
+			time.Sleep(time.Second)
+		}
 	}
 }
