@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/Shopify/sarama"
 )
@@ -18,9 +18,10 @@ func Init(address []string) (err error) {
 
 	client, err = sarama.NewSyncProducer(address, config)
 	if err != nil {
-		fmt.Printf("sarama NewSyncProducer init fail err %v\n.", err)
+		log.Printf("sarama NewSyncProducer init fail err %v\n.", err)
 		return
 	}
+	log.Printf("Kafka init success!\n")
 	return
 }
 
@@ -31,9 +32,9 @@ func SendMessageToKafka(topic, message string) error {
 
 	pid, offset, err := client.SendMessage(msg)
 	if err != nil {
-		fmt.Printf("sarama SendMessages fail err %v.\n", err)
+		log.Printf("sarama SendMessages fail err %v.\n", err)
 		return err
 	}
-	fmt.Printf("pid: %v, offset: %v.\n", pid, offset)
+	log.Printf("kafka send msg ok, pid: %v, offset: %v.\n", pid, offset)
 	return nil
 }
