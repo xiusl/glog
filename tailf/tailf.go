@@ -19,9 +19,11 @@ type TextMessage struct {
 }
 
 type TailServer struct {
+	key   string
 	t     *tail.Tail
 	path  string
 	topic string
+	stop  bool
 }
 
 func NewTailManager(configs []logagent.LogConfig) (*TailManager, error) {
@@ -30,7 +32,7 @@ func NewTailManager(configs []logagent.LogConfig) (*TailManager, error) {
 	}
 	var arr []*TailServer
 	for _, c := range configs {
-		t, err := newTailServer(c.Path, c.Topic)
+		t, err := newTailServer(c.Path, c.Topic, c.Key)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +45,7 @@ func NewTailManager(configs []logagent.LogConfig) (*TailManager, error) {
 	return tm, nil
 }
 
-func newTailServer(filename, topic string) (*TailServer, error) {
+func newTailServer(filename, topic, key string) (*TailServer, error) {
 	config := tail.Config{
 		ReOpen:    true,
 		Follow:    true,
@@ -57,6 +59,7 @@ func newTailServer(filename, topic string) (*TailServer, error) {
 		return nil, err
 	}
 	return &TailServer{
+		key:   key,
 		t:     t,
 		path:  filename,
 		topic: topic,
@@ -66,10 +69,14 @@ func newTailServer(filename, topic string) (*TailServer, error) {
 func (m *TailManager) StartTailf(ts *TailServer) {
 	log.Printf("Tail Server Start path:%v.\n", ts.path)
 	for {
+		if ts.stop {
+			return
+		}
 		select {
 		case line, ok := <-ts.t.Lines:
 			if !ok {
 				log.Printf("Tail Server read fail path:%v.\n", ts.path)
+
 				continue
 			}
 			msg := &TextMessage{
@@ -92,4 +99,57 @@ func (tm *TailManager) ReadMessage() *TextMessage {
 	default:
 		return nil
 	}
+}
+
+func (tm *TailManager) StopTail(key string) {
+	// 一个 key 可能对应多个 tailServer
+	var delIndexs []int
+	for i, ts := range tm.tails {
+		if ts.key == key {
+			ts.stop = true
+			ts.t.Stop()
+			ts.t.Cleanup()
+			delIndexs = append(delIndexs, i)
+			log.Printf("TailManager StopTail key: %v, path: %v.\n", key, ts.path)
+		}
+	}
+	for _, v := range delIndexs {
+		tm.tails = append(tm.tails[:v], tm.tails[v+1:]...)
+	}
+}
+
+func (tm *TailManager) UpdateConfig(key string, configs []logagent.LogConfig) {
+	log.Printf("TailManager UpdateConfig Start key: %v.\n", key)
+	var newTses []*TailServer
+	for _, conf := range configs {
+		exist := false
+		for _, ts := range tm.tails {
+			if ts.path == conf.Path {
+				exist = true
+			}
+		}
+		if exist {
+			continue
+		}
+		t, err := newTailServer(conf.Path, conf.Topic, key)
+		if err != nil {
+			log.Printf("UpdateConfig newTailServer error: %v.\n", err)
+			continue
+		}
+		log.Printf("UpdateConfig newTailServer key:%v, path:%v.\n", key, t.path)
+		newTses = append(newTses, t)
+
+		//
+		go tm.StartTailf(t)
+	}
+	tm.tails = append(tm.tails, newTses...)
+}
+
+func (tm *TailManager) getTailServerByKey(key string) (*TailServer, int) {
+	for i, v := range tm.tails {
+		if v.key == key {
+			return v, i
+		}
+	}
+	return nil, -1
 }

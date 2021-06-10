@@ -16,6 +16,9 @@ const (
 )
 
 func SetupConfigToEtcd() {
+
+	key := "/bd/logagent/config/0.0.0.2"
+
 	cli, err := clientv3.New(
 		clientv3.Config{
 			Endpoints:   []string{"127.0.0.1:2379"},
@@ -31,12 +34,9 @@ func SetupConfigToEtcd() {
 
 	var arr []logagent.LogConfig
 	arr = append(arr, logagent.LogConfig{
-		Path:  "./logs/a.log",
+		Key:   key,
+		Path:  "./logs/c.log",
 		Topic: "a_log",
-	})
-	arr = append(arr, logagent.LogConfig{
-		Path:  "./logs/b.log",
-		Topic: "b_log",
 	})
 
 	data, err := json.Marshal(arr)
@@ -50,13 +50,13 @@ func SetupConfigToEtcd() {
 	}()
 
 	//
-	_, err = cli.Put(ctx, EtcdKey, string(data))
+	_, err = cli.Put(ctx, key, string(data))
 	if err != nil {
 		log.Fatalf("etcd cli put fail, err: %v\n", err)
 	}
 
 	// get
-	resp, err := cli.Get(ctx, EtcdKey)
+	resp, err := cli.Get(ctx, key)
 	if err != nil {
 		log.Fatalf("etcd cli get fail, err: %v\n", err)
 	}
