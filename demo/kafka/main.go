@@ -10,28 +10,31 @@ import (
 func main() {
 	consumer, err := sarama.NewConsumer([]string{"127.0.0.1:9092"}, nil)
 	if err != nil {
-		log.Panicf("sarama NewConsumer init fail err %v\n.", err)
+		log.Panicf("sarama NewConsumer init fail err %v.\n", err)
 	}
-	partitionList, err := consumer.Partitions("web")
+	partitionList, err := consumer.Partitions("a_log")
 	if err != nil {
-		log.Panicf("sarama Partitions get fail err %v\n.", err)
+		log.Panicf("sarama Partitions get fail err %v.\n", err)
 	}
 	log.Printf("partition count: %d", len(partitionList))
 	for partition := range partitionList {
-		pc, err := consumer.ConsumePartition("web", int32(partition), sarama.OffsetNewest)
+		pc, err := consumer.ConsumePartition("a_log", int32(partition), sarama.OffsetNewest)
 		if err != nil {
-			log.Printf("sarama ConsumePartition get fail err %v\n.", err)
+			log.Printf("sarama ConsumePartition get fail err %v.\n", err)
 			continue
 		}
 		defer pc.AsyncClose()
-		for {
-			go func() {
+
+		go func() {
+			for {
 				for msg := range pc.Messages() {
 					fmt.Printf("partition: %d, offset: %d, key: %v, value:%v.\n", msg.Partition, msg.Offset, msg.Key, string(msg.Value))
 				}
-			}()
-		}
+			}
+		}()
+
 	}
+	select {}
 }
 
 func sendToKafka() {
@@ -49,13 +52,13 @@ func sendToKafka() {
 
 	client, err := sarama.NewSyncProducer([]string{"127.0.0.1:9092"}, config)
 	if err != nil {
-		log.Panicf("sarama NewSyncProducer init fail err %v\n.", err)
+		log.Panicf("sarama NewSyncProducer init fail err %v.\n", err)
 	}
 	defer client.Close()
 
 	pid, offset, err := client.SendMessage(msg)
 	if err != nil {
-		log.Panicf("sarama SendMessages fail err %v\n.", err)
+		log.Panicf("sarama SendMessages fail err %v.\n", err)
 	}
 	fmt.Printf("pid: %v, offset: %v", pid, offset)
 }

@@ -11,10 +11,6 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
-const (
-	EtcdKey = "/bd/logagent/config/0.0.0.1"
-)
-
 func SetupConfigToEtcd() {
 
 	key := "/bd/logagent/config/0.0.0.1"
@@ -41,7 +37,7 @@ func SetupConfigToEtcd() {
 	arr = append(arr, logagent.LogConfig{
 		Key:   key,
 		Path:  "./logs/b.log",
-		Topic: "a_log",
+		Topic: "b_log",
 	})
 
 	data, err := json.Marshal(arr)

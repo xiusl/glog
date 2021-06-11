@@ -6,7 +6,6 @@ import (
 	"github.com/xiusl/glog/etcd"
 	"github.com/xiusl/glog/kafka"
 	"github.com/xiusl/glog/logagent"
-	"github.com/xiusl/glog/setting"
 	"github.com/xiusl/glog/tailf"
 )
 
@@ -18,7 +17,7 @@ func main() {
 
 	// 可以根据每台机器的IP来生成不同的key
 	keys := []string{
-		setting.EtcdKey,
+		"/bd/logagent/config/0.0.0.1",
 		"/bd/logagent/config/0.0.0.2",
 		"/bd/logagent/config/0.0.0.3",
 		"/bd/logagent/config/0.0.0.4",

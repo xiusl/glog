@@ -8,7 +8,7 @@ Massive log collection system.  Practice project of Golang.
 
 ## 主要架构
 
-<img src="http://pp.video.sleen.top/uPic/blog/UML%20%E5%9B%BE%20(2)-FAGOAL.jpg" alt="架构图" style="zoom:40%;" />
+<img src="http://pp.video.sleen.top/uPic/blog/UML%20%E5%9B%BE%20(2)-FAGOAL.jpg!blog360" alt="架构图"  />
 
 ### 名词
 
@@ -34,7 +34,7 @@ Massive log collection system.  Practice project of Golang.
    "/logagent/192.168.0.3/config": {"path":"/logs/im.log", "topic": "im_log"}
    ```
 
-   <img src="http://pp.video.sleen.top/uPic/blog/%E6%B5%81%E7%A8%8B%E5%9B%BE-RiJobR.png" alt="流程图" style="zoom:50%;" />
+   <img src="http://pp.video.sleen.top/uPic/blog/%E6%B5%81%E7%A8%8B%E5%9B%BE-RiJobR.png!blog360" alt="流程图" />
 
 2. LogAgent 实时监听 Etcd 中对应 key 的变化，实现热更新。
 
