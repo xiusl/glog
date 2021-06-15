@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/Shopify/sarama"
-	"github.com/xiusl/glog/glog"
+	"github.com/xiusl/glog/logging"
 )
 
 type TransferServer struct {
@@ -24,7 +24,7 @@ type TransMessage struct {
 func NewTransferServer(address []string) (*TransferServer, error) {
 	consumer, err := sarama.NewConsumer([]string{"127.0.0.1:9092"}, nil)
 	if err != nil {
-		glog.Error("Consumer create fail %v.", err)
+		logging.Error("Consumer create fail %v.", err)
 		return nil, err
 	}
 	return &TransferServer{
@@ -45,13 +45,13 @@ var (
 func Init(addrs []string) (err error) {
 	consumer, err = sarama.NewConsumer([]string{"127.0.0.1:9092"}, nil)
 	if err != nil {
-		glog.Error("Consumer create fail %v.", err)
+		logging.Error("Consumer create fail %v.", err)
 		return
 	}
 	conf := sarama.NewConfig()
 	consumerGroup, err = sarama.NewConsumerGroup(addrs, "abc", conf)
 	if err != nil {
-		glog.Error("Consumer create fail %v.", err)
+		logging.Error("Consumer create fail %v.", err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func ConsumeMessageFromKafka(topic string) error {
 	}
 	fmt.Println("return")
 	select {}
-	return nil
+	// return nil
 	//
 }
 func ConsumeMessage(topics []string) {

@@ -46,6 +46,25 @@ Massive log collection system.  Practice project of Golang.
 
 6. 对应的也可以使用 Hadoop 和 storm 进行大数据分析。
 
+## 项目结构
+
+```
+- glog/
+  - demo/        各种三方库的简单应用
+  - es/          发送消息到 ES
+  - etcd/        读取和监听配置信息
+  - kafka/       kafka 生产者封装
+  - logging/     日志库
+  - transfer/    从 Kafka 读取消息
+    - cmd/            发送消息到指定的位置（ES，Headoop等）       
+    - transfer.go     对 Kafka 读取消息的封装  
+  - tailf/       监听读取日志文件内容
+  - main.go
+```
+
+## 应用
+
+
 ## 参考
 
 - [GO语言全栈工程师 287P完结](https://www.bilibili.com/video/BV1FV411r7m8)

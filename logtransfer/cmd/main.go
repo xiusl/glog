@@ -5,15 +5,15 @@ import (
 
 	"github.com/xiusl/glog/es"
 	"github.com/xiusl/glog/etcd"
-	"github.com/xiusl/glog/glog"
 	"github.com/xiusl/glog/logagent"
+	"github.com/xiusl/glog/logging"
 	"github.com/xiusl/glog/logtransfer"
 )
 
 type Array []string
 
 func main() {
-	glog.Info("LogTransfer Starting...")
+	logging.Info("LogTransfer Starting...")
 
 	// 从 Etcd 获取 transfer 配置
 	keys := []string{"/bd/logagent/config/0.0.0.1"}
