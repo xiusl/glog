@@ -15,3 +15,6 @@ To have launchd start elasticsearch now and restart at login:
 Or, if you don't want/need a background service you can just run:
   elasticsearch
 ```
+
+```
+brew install 

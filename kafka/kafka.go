@@ -18,7 +18,7 @@ func Init(address []string) (err error) {
 
 	client, err = sarama.NewSyncProducer(address, config)
 	if err != nil {
-		log.Printf("sarama NewSyncProducer init fail err %v\n.", err)
+		log.Printf("sarama NewSyncProducer init fail err %v.\n", err)
 		return
 	}
 	log.Printf("Kafka init success!\n")
