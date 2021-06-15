@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/xiusl/glog/es"
 	"github.com/xiusl/glog/etcd"
 	"github.com/xiusl/glog/glog"
 	"github.com/xiusl/glog/logagent"
@@ -39,12 +40,16 @@ func main() {
 	// }
 	logtransfer.Init(kafkaAddrs)
 
+	// 初始化Es
+	es.Init("http://127.0.0.1:9200")
+
 	go func() {
 		for {
 			select {
 			case msg := <-logtransfer.MsgChan:
 				// 转发到 Es
 				log.Printf("转发至Es, %v", msg.Message)
+				es.SendToEs(msg.Topic, msg.Message)
 			}
 		}
 	}()
