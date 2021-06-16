@@ -64,6 +64,32 @@ Massive log collection system.  Practice project of Golang.
 
 ## 应用
 
+对 nginx 日志的收集
+
+以哩嗑 https://ins.sleen.top 项目为例
+
+1. 部署 etcd (可以参考 References/etcd.md 或自行 Google)，我这里是直接部署在我的服务器上 192.144.171.238:2379
+2. 部署 kafka (可以参考 References/kafka.md 或自行 Google)，同样我部署在了 192.144.171.238:9092
+3. 部署 glog/web/main.go，这个主要是给 etcd 提供了一个可视化的 key-value 编辑工具，便于修改配置信息，这个也放在了 192.144.171.238:8083，完成后添加以下 key-value
+  ```
+  /bd/logagent/config/122.112.235.92 : [{"topic":"nginx_log", "path":"/var/log/nginx/access.log"}]
+  ```
+4. 修改 config 下的配置信息，并在 ins.sleen.top 的服务器上运行 glog/main.go，这样 access.log 的内容就会发送到 kafka 中
+
+5. 部署 ElasticSearch，(可以参考 demo/elasticsearch/readme.md 或自行 Google)，依旧是放在 192.144.171.238:9200
+
+6. 在一台服务器上运行 glog/logtransfer/cmd/main.go ，读取 kafka 消息传输到 Es 中
+
+7. 在本地或其他服务器上安装 kibana，配置 Es host，设置索引，即可对日志信息进行分析 
+
+   
+
+基本效果，当 ins.sleen.top 被访问时，日志信息会收集起来
+
+![20210616141012](http://pp.video.sleen.top/uPic/blog/20210616141012-JhsMKq.jpg)
+
+
+
 
 ## 参考
 

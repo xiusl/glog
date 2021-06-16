@@ -17,4 +17,28 @@ Or, if you don't want/need a background service you can just run:
 ```
 
 ```
-brew install 
+brew install
+```
+
+## CentOS 安装
+
+```
+vim /etc/yum.repos.d/elasticsearch.repo
+```
+
+增加以下内容
+```
+[elasticsearch]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/7.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=0
+autorefresh=1
+type=rpm-md
+```
+
+执行
+```
+yum install --enablerepo=elasticsearch elasticsearch
+```
