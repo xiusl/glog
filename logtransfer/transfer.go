@@ -22,7 +22,7 @@ type TransMessage struct {
 }
 
 func NewTransferServer(address []string) (*TransferServer, error) {
-	consumer, err := sarama.NewConsumer([]string{"127.0.0.1:9092"}, nil)
+	consumer, err := sarama.NewConsumer(address, nil)
 	if err != nil {
 		logging.Error("Consumer create fail %v.", err)
 		return nil, err
@@ -43,7 +43,7 @@ var (
 )
 
 func Init(addrs []string) (err error) {
-	consumer, err = sarama.NewConsumer([]string{"127.0.0.1:9092"}, nil)
+	consumer, err = sarama.NewConsumer(addrs, nil)
 	if err != nil {
 		logging.Error("Consumer create fail %v.", err)
 		return

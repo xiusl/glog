@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/xiusl/glog/config"
 	"github.com/xiusl/glog/etcd"
 	"github.com/xiusl/glog/kafka"
 	"github.com/xiusl/glog/logagent"
@@ -10,20 +11,22 @@ import (
 )
 
 func main() {
-	err := kafka.Init([]string{"127.0.0.1:9092"})
+	conf, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("config load error: %v.\n", err)
+	}
+
+	err = kafka.Init([]string{conf.KafkaAddr})
 	if err != nil {
 		log.Fatalf("kafka init error: %v.\n", err)
 	}
 
 	// 可以根据每台机器的IP来生成不同的key
 	keys := []string{
-		"/bd/logagent/config/0.0.0.1",
-		"/bd/logagent/config/0.0.0.2",
-		"/bd/logagent/config/0.0.0.3",
-		"/bd/logagent/config/0.0.0.4",
+		conf.EtcdKey,
 	}
 
-	etcdServer, err := etcd.NewEtcdServer([]string{"127.0.0.1:2379"}, keys)
+	etcdServer, err := etcd.NewEtcdServer([]string{conf.EtcdAddr}, keys)
 	if err != nil {
 		log.Fatalf("etcd init error: %v.\n", err)
 	}

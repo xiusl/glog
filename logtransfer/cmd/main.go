@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/xiusl/glog/config"
 	"github.com/xiusl/glog/es"
 	"github.com/xiusl/glog/etcd"
 	"github.com/xiusl/glog/logagent"
@@ -15,9 +16,14 @@ type Array []string
 func main() {
 	logging.Info("LogTransfer Starting...")
 
+	conf, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("config load error: %v.\n", err)
+	}
+
 	// 从 Etcd 获取 transfer 配置
-	keys := []string{"/bd/logagent/config/0.0.0.1"}
-	etcdAddrs := []string{"127.0.0.1:2379"}
+	keys := []string{conf.EtcdKey}
+	etcdAddrs := []string{conf.EtcdAddr}
 	etcdServer, err := etcd.NewEtcdServer(etcdAddrs, keys)
 	if err != nil {
 		panic(err)
@@ -33,7 +39,7 @@ func main() {
 		configs = append(configs, tmpConfigs...)
 	}
 
-	kafkaAddrs := []string{"127.0.0.1:9092"}
+	kafkaAddrs := []string{conf.KafkaAddr}
 	// trans, err := logtransfer.NewTransferServer(kafkaAddrs)
 	// if err != nil {
 	// 	panic(err)
@@ -41,7 +47,7 @@ func main() {
 	logtransfer.Init(kafkaAddrs)
 
 	// 初始化Es
-	es.Init("http://127.0.0.1:9200")
+	es.Init(conf.EsAddr)
 
 	go func() {
 		for {
@@ -63,6 +69,7 @@ func main() {
 		// logtransfer.ConsumeMessageFromKafka(conf.Topic)
 		// break
 	}
+	log.Printf("Topics %v.\n", topics)
 
 	logtransfer.ConsumeMessage(topics)
 
