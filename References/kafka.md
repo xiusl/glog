@@ -95,9 +95,57 @@ $ go get github.com/Shopify/sarama
 ```
 
 
+## CentOS 部署 Kafka
 
+1. 更新系统
+```
+yum update -y 
+```
 
+2. 安装 Java 运行时
+```
+yum install java-1.8.0-openjdk.x86_64
+java -version
+```
 
+3. 设置 `JAVA_HOME` 和 `JRE_HOME`
+```
+vim /etc/profile
+```
+增加下面内容
+```
+export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
+export JRE_HOME=/usr/lib/jvm/jre
+```
+执行
+```
+source /etc/profile
+```
+
+4. 下载 kafka
+```
+wget https://mirrors.bfsu.edu.cn/apache/kafka/2.8.0/kafka_2.12-2.8.0.tgz
+tar -xvf kafka_2.12-2.8.0.tgz
+mv kafka_2.12-2.8.0 /opt
+```
+
+5. 启动 Zookeeper
+```
+cd /opt/kafka_2.12-2.8.0
+./bin/zookeeper-server-start.sh -daemon config/zookeeper.properties
+```
+
+6. 启动 Kafka
+```
+./bin/kafka-server-start.sh -daemon config/server.properties
+```
+
+7. 注意
+```
+// 出现下面错误，需要修改 server.properties
+// dial tcp: lookup VM_16_17_centos: no such host.
+advertised.listeners=PLAINTEXT://localhost:9092
+```
 
 
 

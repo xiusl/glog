@@ -54,3 +54,15 @@ $ etcdctl del name
 > 1
 ```
 
+## Centos 安装 Etcd
+
+安装
+```
+yum install etcd
+```
+
+测试
+```
+etcdctl --endpoints=192.144.171.238:2379 put name "Tom"
+etcdctl --endpoints=192.144.171.238:2379 get name
+```

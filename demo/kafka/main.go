@@ -8,17 +8,21 @@ import (
 )
 
 func main() {
-	consumer, err := sarama.NewConsumer([]string{"127.0.0.1:9092"}, nil)
+	sendToKafka()
+	// a()
+}
+func a() {
+	consumer, err := sarama.NewConsumer([]string{"192.144.171.238:9092"}, nil)
 	if err != nil {
 		log.Panicf("sarama NewConsumer init fail err %v.\n", err)
 	}
-	partitionList, err := consumer.Partitions("a_log")
+	partitionList, err := consumer.Partitions("web")
 	if err != nil {
 		log.Panicf("sarama Partitions get fail err %v.\n", err)
 	}
 	log.Printf("partition count: %d", len(partitionList))
 	for partition := range partitionList {
-		pc, err := consumer.ConsumePartition("a_log", int32(partition), sarama.OffsetNewest)
+		pc, err := consumer.ConsumePartition("web", int32(partition), sarama.OffsetNewest)
 		if err != nil {
 			log.Printf("sarama ConsumePartition get fail err %v.\n", err)
 			continue
@@ -36,7 +40,6 @@ func main() {
 	}
 	select {}
 }
-
 func sendToKafka() {
 	config := sarama.NewConfig()
 	// 发送完数据需要 leader 和 follow 都确认
@@ -50,7 +53,7 @@ func sendToKafka() {
 	msg.Topic = "web"
 	msg.Value = sarama.StringEncoder("this is a message")
 
-	client, err := sarama.NewSyncProducer([]string{"127.0.0.1:9092"}, config)
+	client, err := sarama.NewSyncProducer([]string{"192.144.171.238:9092"}, config)
 	if err != nil {
 		log.Panicf("sarama NewSyncProducer init fail err %v.\n", err)
 	}
