@@ -89,6 +89,11 @@ Massive log collection system.  Practice project of Golang.
 ![20210616141012](http://pp.video.sleen.top/uPic/blog/20210616141012-JhsMKq.jpg)
 
 
+## TODO
+
+- web 端增加用户验证
+- kafka、etcd、es 增加权限控制
+
 
 
 ## 参考
